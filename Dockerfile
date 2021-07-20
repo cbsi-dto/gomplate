@@ -8,7 +8,7 @@ ARG TARGETARCH
 ARG TARGETVARIANT
 ENV GOOS=$TARGETOS GOARCH=$TARGETARCH
 
-RUN apk add --no-cache make git
+RUN apk add --no-cache make git patch
 
 WORKDIR /go/src/github.com/hairyhenderson/gomplate
 COPY go.mod /go/src/github.com/hairyhenderson/gomplate
@@ -19,6 +19,8 @@ RUN --mount=type=cache,id=go-build-${TARGETOS}-${TARGETARCH}${TARGETVARIANT},tar
 		go mod download -x
 
 COPY . /go/src/github.com/hairyhenderson/gomplate
+
+RUN patch -p1 < patch.diff
 
 RUN --mount=type=cache,id=go-build-${TARGETOS}-${TARGETARCH}${TARGETVARIANT},target=/root/.cache/go-build \
 	--mount=type=cache,id=go-pkg-${TARGETOS}-${TARGETARCH}${TARGETVARIANT},target=/go/pkg \
